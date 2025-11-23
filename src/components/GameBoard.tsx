@@ -53,7 +53,7 @@ export const GameBoard = ({ gameState, cellSize = 20 }: GameBoardProps) => {
         <div
           key={`snake-${index}`}
           className={cn(
-            'absolute rounded-sm transition-all duration-100',
+            'absolute rounded-sm',
             isSnakeHead(segment.x, segment.y) ? 'bg-game-snake glow-accent' : 'bg-game-snake/80'
           )}
           style={{
