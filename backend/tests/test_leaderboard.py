@@ -1,7 +1,21 @@
 from fastapi.testclient import TestClient
 from app.main import app
+from app.db_models import Base
+from app.database import engine
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def setup_test_db():
+    """Setup test database for each test"""
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    yield
+    Base.metadata.drop_all(bind=engine)
+
 
 client = TestClient(app)
+
 
 def get_auth_token():
     # Helper to get token
@@ -16,6 +30,7 @@ def get_auth_token():
         )
     return response.json()["token"]
 
+
 def test_submit_score():
     token = get_auth_token()
     response = client.post(
@@ -24,6 +39,7 @@ def test_submit_score():
         headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 201
+
 
 def test_get_leaderboard():
     response = client.get("/api/leaderboard")

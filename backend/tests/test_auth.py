@@ -1,8 +1,23 @@
 from fastapi.testclient import TestClient
 from app.main import app
+from app.database import SessionLocal, init_db, engine
+from app.db_models import Base
 import pytest
 
+
+@pytest.fixture(autouse=True)
+def setup_test_db():
+    """Setup test database for each test"""
+    # Drop all tables and recreate for clean state
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    yield
+    # Cleanup after test
+    Base.metadata.drop_all(bind=engine)
+
+
 client = TestClient(app)
+
 
 def test_signup():
     response = client.post(
@@ -13,6 +28,7 @@ def test_signup():
     data = response.json()
     assert data["user"]["email"] == "test@example.com"
     assert "token" in data
+
 
 def test_login():
     # First signup
@@ -30,6 +46,7 @@ def test_login():
     data = response.json()
     assert data["user"]["email"] == "login@example.com"
     assert "token" in data
+
 
 def test_login_invalid_credentials():
     response = client.post(
