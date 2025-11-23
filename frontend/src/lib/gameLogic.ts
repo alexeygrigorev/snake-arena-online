@@ -23,6 +23,7 @@ export const getRandomPosition = (excludePositions: Position[] = []): Position =
   let attempts = 0;
   const maxAttempts = 100;
 
+  // Try random positions first
   do {
     position = {
       x: Math.floor(Math.random() * GRID_SIZE),
@@ -34,7 +35,27 @@ export const getRandomPosition = (excludePositions: Position[] = []): Position =
     excludePositions.some((pos) => pos.x === position.x && pos.y === position.y)
   );
 
-  return position;
+  // If we found a valid position, return it
+  if (!excludePositions.some((pos) => pos.x === position.x && pos.y === position.y)) {
+    return position;
+  }
+
+  // Fallback: Find all available positions and pick one
+  const available: Position[] = [];
+  for (let x = 0; x < GRID_SIZE; x++) {
+    for (let y = 0; y < GRID_SIZE; y++) {
+      if (!excludePositions.some((pos) => pos.x === x && pos.y === y)) {
+        available.push({ x, y });
+      }
+    }
+  }
+
+  if (available.length === 0) {
+    // Should not happen in normal gameplay, but return a default to avoid crash
+    return { x: 0, y: 0 };
+  }
+
+  return available[Math.floor(Math.random() * available.length)];
 };
 
 export const getNextHeadPosition = (head: Position, direction: Direction): Position => {

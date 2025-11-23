@@ -40,7 +40,7 @@ describe('mockApi', () => {
     });
 
     it('should fail signup with short password', async () => {
-      const result = await mockApi.signup('new@example.com', 'NewUser', 'short');
+      const result = await mockApi.signup('short@example.com', 'ShortUser', 'short');
       expect(result.error).toBe('Password must be at least 6 characters');
     });
 
