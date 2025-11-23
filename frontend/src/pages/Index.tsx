@@ -4,7 +4,7 @@ import { GameBoard } from '@/components/GameBoard';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
-import { mockApi } from '@/services/mockApi';
+import { api } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import {
   createInitialGameState,
@@ -67,7 +67,7 @@ const Index = () => {
       setGameState((prev) => {
         const newState = updateGameState(prev);
         if (newState.gameOver && user) {
-          mockApi.submitScore(newState.score, mode);
+          api.submitScore(newState.score, mode);
           toast({
             title: 'Game Over!',
             description: `Final score: ${newState.score}`,

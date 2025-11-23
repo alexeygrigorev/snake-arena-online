@@ -1,27 +1,6 @@
 // Centralized mock API service for all backend calls
+import type { User, LeaderboardEntry, ActiveGame } from './types';
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-}
-
-export interface LeaderboardEntry {
-  id: string;
-  username: string;
-  score: number;
-  mode: 'walls' | 'pass-through';
-  timestamp: string;
-}
-
-export interface ActiveGame {
-  id: string;
-  username: string;
-  score: number;
-  mode: 'walls' | 'pass-through';
-  snake: Array<{ x: number; y: number }>;
-  food: { x: number; y: number };
-}
 
 // Mock storage
 let mockUsers: User[] = [

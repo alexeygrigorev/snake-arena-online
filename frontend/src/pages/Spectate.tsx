@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { GameBoard } from '@/components/GameBoard';
-import { mockApi, type ActiveGame } from '@/services/mockApi';
+import { api } from '@/services/api';
+import type { ActiveGame } from '@/services/types';
 import { updateGameState, type GameState, type Direction } from '@/lib/gameLogic';
 import { Eye } from 'lucide-react';
 
@@ -13,7 +14,7 @@ const Spectate = () => {
 
   useEffect(() => {
     const loadGames = async () => {
-      const games = await mockApi.getActiveGames();
+      const games = await api.getActiveGames();
       setActiveGames(games);
       if (games.length > 0 && !selectedGame) {
         setSelectedGame(games[0]);
@@ -51,7 +52,7 @@ const Spectate = () => {
         }
 
         const newState = updateGameState({ ...prev, direction: currentDirection });
-        
+
         // Reset if game over
         if (newState.gameOver) {
           return {
@@ -89,11 +90,10 @@ const Spectate = () => {
                   <button
                     key={game.id}
                     onClick={() => setSelectedGame(game)}
-                    className={`w-full text-left p-4 rounded-lg transition-all ${
-                      selectedGame?.id === game.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted hover:bg-muted/80'
-                    }`}
+                    className={`w-full text-left p-4 rounded-lg transition-all ${selectedGame?.id === game.id
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted hover:bg-muted/80'
+                      }`}
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <Eye className="w-4 h-4" />

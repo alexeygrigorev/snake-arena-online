@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { mockApi, type LeaderboardEntry } from '@/services/mockApi';
+import { api } from '@/services/api';
+import type { LeaderboardEntry } from '@/services/types';
 import { Trophy, Medal, Award } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -14,7 +15,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const loadLeaderboard = async () => {
       setLoading(true);
-      const data = await mockApi.getLeaderboard(
+      const data = await api.getLeaderboard(
         mode === 'all' ? undefined : mode,
         20
       );
