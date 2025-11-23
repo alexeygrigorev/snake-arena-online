@@ -14,8 +14,9 @@ class Settings(BaseSettings):
     # Database settings
     database_url: str = os.getenv(
         "DATABASE_URL", 
-        "sqlite:///./snake_arena.db"
+        "postgresql://snakearena:snakearena@postgres:5432/snakearena"
     )
+
     
     # JWT settings
     secret_key: str = os.getenv(
