@@ -1,6 +1,17 @@
 import os
+import sys
 from pydantic_settings import BaseSettings
 from pydantic import ConfigDict
+
+
+def _get_default_database_url() -> str:
+    """Get default database URL based on environment"""
+    # Use file-based SQLite for tests to ensure tables persist across connections
+    if "pytest" in sys.modules or os.getenv("TESTING") == "true":
+        return "sqlite:///./test.db"
+    
+    # Use PostgreSQL for production/Docker
+    return "postgresql://snakearena:snakearena@postgres:5432/snakearena"
 
 
 class Settings(BaseSettings):
@@ -14,7 +25,7 @@ class Settings(BaseSettings):
     # Database settings
     database_url: str = os.getenv(
         "DATABASE_URL", 
-        "postgresql://snakearena:snakearena@postgres:5432/snakearena"
+        _get_default_database_url()
     )
 
     
