@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 from app.routers import auth, leaderboard, games
 from app.database import init_db, _init_fake_data
@@ -49,6 +50,20 @@ app.include_router(auth.router, prefix="/api")
 app.include_router(leaderboard.router, prefix="/api")
 app.include_router(games.router, prefix="/api")
 
-@app.get("/")
-async def root():
-    return {"message": "Welcome to Snake Arena Online API"}
+import os
+from fastapi.responses import FileResponse
+
+# Serve frontend in production
+if os.path.exists("static"):
+    app.mount("/assets", StaticFiles(directory="static/assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    async def catch_all(full_path: str):
+        file_path = f"static/{full_path}"
+        if os.path.isfile(file_path):
+            return FileResponse(file_path)
+        return FileResponse("static/index.html")
+else:
+    @app.get("/")
+    async def root():
+        return {"message": "Welcome to Snake Arena Online API"}

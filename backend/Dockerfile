@@ -8,10 +8,18 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 WORKDIR /app
 
 # Copy dependency files
-COPY pyproject.toml uv.lock ./
+COPY backend/pyproject.toml backend/uv.lock ./
 
 # Install dependencies
 RUN uv sync --frozen --no-dev
+
+# Frontend build stage
+FROM node:20-alpine as frontend-builder
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend .
+RUN npm run build
 
 # Production stage
 FROM python:3.12-slim
@@ -26,7 +34,10 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY app ./app
+COPY backend/app ./app
+
+# Copy frontend build
+COPY --from=frontend-builder /frontend/dist ./static
 
 # Set environment variables
 ENV PATH="/app/.venv/bin:$PATH"
