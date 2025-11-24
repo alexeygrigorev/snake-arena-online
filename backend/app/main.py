@@ -11,15 +11,25 @@ from app.config import settings
 async def lifespan(app: FastAPI):
     """Lifespan context manager for startup and shutdown events"""
     # Startup: Initialize database
-    print(f"Initializing database at: {settings.database_url}")
-    init_db()
-    print("✓ Database initialized")
+    try:
+        print(f"Initializing database at: {settings.database_url}")
+        init_db()
+        print("✓ Database initialized - tables created successfully")
+    except Exception as e:
+        print(f"❌ Database initialization failed: {e}")
+        print(f"Error type: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
+        raise  # Re-raise to prevent app from starting with broken DB
     
     # Seed with fake data in debug mode
     if settings.debug:
         print("Debug mode: Seeding database with fake data...")
-        _init_fake_data()
-        print("✓ Fake data added")
+        try:
+            _init_fake_data()
+            print("✓ Fake data added")
+        except Exception as e:
+            print(f"⚠️  Failed to add fake data: {e}")
     
     yield
     # Shutdown: cleanup if needed

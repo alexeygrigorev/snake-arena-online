@@ -23,10 +23,20 @@ class Settings(BaseSettings):
     )
     
     # Database settings
-    database_url: str = os.getenv(
+    _raw_database_url: str = os.getenv(
         "DATABASE_URL", 
         _get_default_database_url()
     )
+    
+    @property
+    def database_url(self) -> str:
+        """Get database URL with postgres:// to postgresql:// conversion"""
+        url = self._raw_database_url
+        # Render and some other services provide postgres:// URLs
+        # but SQLAlchemy requires postgresql://
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        return url
 
     
     # JWT settings
